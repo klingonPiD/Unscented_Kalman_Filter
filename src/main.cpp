@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
   /**********************************************
    *  Set Measurements                          *
    **********************************************/
-  bool use_laser = false;
+  bool use_laser = true;
   bool use_radar = true;
 
   vector<MeasurementPackage> measurement_pack_list;
