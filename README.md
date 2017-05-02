@@ -6,9 +6,10 @@ The objective of this project is to implement an Unscented Kalman Filter that co
 
 # File structure
 - **ReadMe.md**: This file
-- **main.cpp**: The main executable program that loops through the input file measurements and calls the unscented kalman filter (ukf) to get prediction outputs. This file is provided by Udacity and used as is.
-- **ukf.h** and **ukf.cpp**: Contains the implementation of the unscented kalman filter. It contains the implementation of both the prediction and measurment update steps.
+- **main.cpp**: The main executable program that loops through the input file measurements and calls the unscented kalman filter (ukf) to get prediction outputs. This flags in this file need to be set to to enable aprropriate radar only or lidar only mode.
+- **ukf.h** and **ukf.cpp**: Contains the implementation of the unscented kalman filter.
 - **tools.h** and **tools.cpp**: Utility class to compute RMSE.
+- **ukf-visualization.ipynb**: Python notebook to visualize UKF outputs.
 
 # Description
 
@@ -21,7 +22,7 @@ The UKF computes an estimate using the same steps as a Kalman filter - predictio
 
 ## Prediction step
 The implemented UKF uses a CTRV (Constant Turn Rate and Velocity) model to depict the state of the object to be tracked. This state model can be codified as follows
-x = [px py v $ psi $ \psi]
+x = [px py v psi psi_dot]
 ![CTRV model](ctrv_model.png)
 
 The transformation that transforms the above state vector from time step k to time step k+1 is no longer a linear transformation. The UKF addresses this by  
@@ -33,7 +34,7 @@ The idea here is that 2 points are chosen for each state in the state vector. In
 
 ### Predict sigma points
 The implementation for this step can be found in `Prediction` function in ukf.cpp.
-The process model is applied to each of the sigma points. The process model is basically a set of equations that can be obtained by integrating the differentiated state model over a desired time interval \delta * t.
+The process model is applied to each of the sigma points. The process model is basically a set of equations that can be obtained by integrating the differentiated state model over a desired time interval delta * t.
 ![UKF process model](ukf_process_model.png)
 
 Note that the final process model implemented in the ukf.cpp takes into account the process noise as well (which are captured in the 6th and 7th dimension of each of the augmented sigma points). The predicted sigma points will have a state dimension of 5 for each point (after applying the necessary process noise correction).
@@ -69,13 +70,18 @@ It turns out approximately 3% of the radar predictions and 2% of the lidar predi
 
 # Results
 The extended Kalman filter (EKF)  was tested on the dataset provided by Udacity and evaluation metric used was RMSE (Root Mean Squared Error) between the predicted states and the provided ground truth values.
-The RMSE for the dataset including lidar and radar measurements was [0.06, 0.08, 0.33, 0.21]. The visualization is shown below
+The RMSE for the dataset including lidar and radar measurements was [0.06, 0.08, 0.33, 0.21]. The visualization is shown below.
+
 ![UKF plot](ukf_plot.png)
 
 The RMSE for the dataset including lidar measurements alone was [0.09, 0.09, 0.61, 0.27].
 The RMSE for the dataset including radar measurements alone was [0.14, 0.21, 0.38, 0.33].
 
 The visualizations for the above two cases can be seen in the ipython notebook `ukf_visualization.ipynb`.
+
+# Discussion
+
+The UKF predicted states seem to mirror the ground truths quite well. As compared to the EKF (Extended Kalman Filter) outputs in the prior project, the UKF predicted outputs seem to perform especially well near the curves and bends of the path. This is as expected since the UKF is supposed to handle non-linearity better than a simple or extended Kalman filter. Even though UKF handles non-linear process and measurement models quite well, it still operates under the assumption that all the distributions are Gaussian. Real world phenomena that violate this assumption can mess with the UKF predictions.
 
 # References
 - Starter code provided by Udacity / Mercedes Benz https://github.com/udacity/CarND-Unscented-Kalman-Filter-Project.
