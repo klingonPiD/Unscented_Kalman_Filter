@@ -65,10 +65,17 @@ One important aspect of the implementation is to choose the right values for the
 Inorder to make sure that the noise params are appropriately chosen, one can plot the NIS (Normalized Innovation Squared) values. The NIS is a scalar metric that captures the error (difference between measured and predicted values) in relation to the covariance matrix. Below is the chart of the NIS values for the implemented UKF on the Udacity provided data. The idea here is that less than 5% of the NIS values should exceed the baseline.
 ![NIS plot](NIS_plot.png)
 
+It turns out approximately 3% of the radar predictions and 2% of the lidar predictions exceed the baseline. This computation can be found in `ukf_visualization.ipynb`.
+
 # Results
 The extended Kalman filter (EKF)  was tested on the dataset provided by Udacity and evaluation metric used was RMSE (Root Mean Squared Error) between the predicted states and the provided ground truth values.
-The RMSE for the dataset was [0.06, 0.08, 0.33, 0.21] and the visualization is shown below
+The RMSE for the dataset including lidar and radar measurements was [0.06, 0.08, 0.33, 0.21]. The visualization is shown below
 ![UKF plot](ukf_plot.png)
+
+The RMSE for the dataset including lidar measurements alone was [0.09, 0.09, 0.61, 0.27].
+The RMSE for the dataset including radar measurements alone was [0.14, 0.21, 0.38, 0.33].
+
+The visualizations for the above two cases can be seen in the ipython notebook `ukf_visualization.ipynb`.
 
 # References
 - Starter code provided by Udacity / Mercedes Benz https://github.com/udacity/CarND-Unscented-Kalman-Filter-Project.

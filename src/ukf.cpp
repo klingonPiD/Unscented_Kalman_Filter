@@ -93,7 +93,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 		x_ = VectorXd(5);
 		previous_timestamp_ = meas_package.timestamp_;
 
-		if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+		if (use_radar_ && meas_package.sensor_type_ == MeasurementPackage::RADAR) {
 			/**
 			Convert radar from polar (pho, phi, pho_dot) to ctrv (px, py, v, si, si_dot) coordinates and initialize state.
 			*/
@@ -108,7 +108,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 			is_initialized_ = true;
 			return;
 		}
-		if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
+		if (use_laser_ && meas_package.sensor_type_ == MeasurementPackage::LASER) {
 			/**
 			/**
 			Convert lidar (px, py, vx, vy) to ctrv (px, py, v, si, si_dot) coordinates and initialize state.
@@ -117,8 +117,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 			is_initialized_ = true;
 			return;
 		}
-
-		// done initializing, no need to predict or update
+		// Laser / radar mode only...need re-initialization
 		return;
 	}
 
@@ -207,12 +206,15 @@ void UKF::Prediction(double delta_t) {
 * @param {MeasurementPackage} meas_package
 */
 void UKF::Update(MeasurementPackage meas_package) {
+	
 	//set measurement dimension, laser can measure px and py, radar can measure pho, phi and theta
 	int n_z;
-	if (meas_package.sensor_type_ == MeasurementPackage::RADAR)
+	if (use_radar_ && meas_package.sensor_type_ == MeasurementPackage::RADAR)
 		n_z = 3;
-	if (meas_package.sensor_type_ == MeasurementPackage::LASER)
+	else if (use_laser_ && meas_package.sensor_type_ == MeasurementPackage::LASER)
 		n_z = 2;
+	else
+		return;
 
 	//Get predicted mean and covariance
 	//create vector for predicted state
